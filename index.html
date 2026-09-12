@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R16 Animator — Roblox animation commissions</title>
+<meta name="description" content="R16 Roblox animations — walking, running, crouching and crouch-walking cycles, made frame by frame in Studio. Commissions from $5.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' fill='%230B0D10'/%3E%3Cpath d='M12 4 L20 12 L12 20 L4 12 Z' fill='%235B8CFF'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  --bg:#0B0D10;
+  --panel:#14171C;
+  --panel-raised:#181C22;
+  --border:#242832;
+  --border-soft:#1B1F26;
+  --text:#ECE8DE;
+  --text-dim:#8B93A1;
+  --text-faint:#565C68;
+  --blue:#5B8CFF;
+  --blue-dim:#3C5CA8;
+  --amber:#E8B93F;
+  --font-display:'Space Grotesk', system-ui, sans-serif;
+  --font-body:'Inter', system-ui, sans-serif;
+  --font-mono:'JetBrains Mono', ui-monospace, monospace;
+  --radius:10px;
+  --wrap:1120px;
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto;}
+  *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
+}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  font-size:16px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+
+a{color:inherit;}
+img,video{max-width:100%; display:block;}
+
+.wrap{max-width:var(--wrap); margin:0 auto; padding:0 28px;}
+
+/* ---------- top chrome bar ---------- */
+.chrome{
+  border-bottom:1px solid var(--border-soft);
+  background:var(--panel);
+}
+.chrome-inner{
+  max-width:var(--wrap); margin:0 auto; padding:0 28px;
+  height:44px; display:flex; align-items:center; gap:10px;
+}
+.chrome-dot{width:8px; height:8px; border-radius:50%; background:var(--border);}
+.chrome-dot.on{background:var(--blue);}
+.chrome-label{
+  font-family:var(--font-mono); font-size:12px; color:var(--text-faint);
+  margin-left:6px;
+}
+
+/* ---------- header / nav ---------- */
+header{
+  position:sticky; top:0; z-index:40;
+  background:rgba(11,13,16,0.92);
+  backdrop-filter:none;
+  border-bottom:1px solid var(--border-soft);
+}
+.nav{
+  height:64px; display:flex; align-items:center; justify-content:space-between; gap:24px;
+}
+.brand{
+  font-family:var(--font-display); font-weight:600; font-size:18px;
+  letter-spacing:-0.01em; text-decoration:none; display:flex; align-items:center; gap:8px;
+}
+.brand-mark{
+  width:14px; height:14px; background:var(--blue);
+  clip-path:polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  flex-shrink:0;
+}
+.timeline-nav{
+  display:flex; align-items:center; gap:0;
+  list-style:none; margin:0; padding:0;
+}
+.timeline-nav li{display:flex; align-items:center;}
+.timeline-nav li + li::before{
+  content:''; width:28px; height:1px; background:var(--border); margin:0 2px;
+}
+.timeline-nav a{
+  text-decoration:none; font-size:13px; color:var(--text-dim);
+  display:flex; align-items:center; gap:7px; padding:8px 4px;
+  transition:color 0.15s ease;
+}
+.timeline-nav a:hover, .timeline-nav a:focus-visible{color:var(--text);}
+.tl-diamond{
+  width:7px; height:7px; background:var(--border);
+  clip-path:polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  transition:background 0.15s ease;
+}
+.timeline-nav a:hover .tl-diamond, .timeline-nav a:focus-visible .tl-diamond{background:var(--blue);}
+.nav-cta{
+  font-family:var(--font-mono); font-size:13px; color:var(--bg);
+  background:var(--blue); padding:9px 16px; border-radius:6px;
+  text-decoration:none; white-space:nowrap; border:1px solid var(--blue);
+  transition:opacity 0.15s ease;
+}
+.nav-cta:hover{opacity:0.85;}
+.nav-toggle{display:none;}
+
+/* ---------- section rhythm ---------- */
+section{padding:96px 0;}
+.section-head{max-width:560px; margin-bottom:56px;}
+.eyebrow{
+  font-family:var(--font-mono); font-size:12px; color:var(--blue);
+  margin:0 0 14px;
+}
+h1,h2,h3{font-family:var(--font-display); font-weight:600; margin:0; letter-spacing:-0.015em;}
+h2{font-size:32px; line-height:1.2;}
+.section-sub{color:var(--text-dim); font-size:16px; margin:14px 0 0; max-width:46ch;}
+
+/* ---------- keyframe divider ---------- */
+.kf-divider{
+  display:flex; align-items:center; gap:10px;
+  padding:0 0 0; margin:0;
+}
+.kf-divider .line{flex:1; height:1px; background:var(--border);}
+.kf-divider .dot{
+  width:7px; height:7px; background:var(--border-soft); border:1px solid var(--border);
+  clip-path:polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+
+/* ---------- hero ---------- */
+.hero{padding:64px 0 96px;}
+.hero-grid{
+  display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:center;
+}
+.hero-tag{
+  font-family:var(--font-mono); font-size:12px; color:var(--text-dim);
+  border:1px solid var(--border); border-radius:20px; padding:5px 12px;
+  display:inline-flex; align-items:center; gap:7px; margin-bottom:24px;
+}
+.hero-tag .dot{width:6px; height:6px; border-radius:50%; background:var(--amber);}
+.hero h1{font-size:46px; line-height:1.08; margin-bottom:20px;}
+.hero p.lead{font-size:17px; color:var(--text-dim); max-width:44ch; margin:0 0 32px;}
+.hero-actions{display:flex; gap:14px; flex-wrap:wrap; margin-bottom:28px;}
+.btn{
+  font-family:var(--font-body); font-weight:500; font-size:14.5px;
+  padding:12px 22px; border-radius:6px; text-decoration:none;
+  display:inline-flex; align-items:center; gap:8px; border:1px solid transparent;
+  transition:opacity 0.15s ease, border-color 0.15s ease;
+}
+.btn-primary{background:var(--blue); color:#08101E;}
+.btn-primary:hover{opacity:0.88;}
+.btn-ghost{border-color:var(--border); color:var(--text);}
+.btn-ghost:hover{border-color:var(--text-faint);}
+.hero-meta{
+  font-family:var(--font-mono); font-size:12.5px; color:var(--text-faint);
+}
+
+/* viewport frame — mimics the Studio window chrome from the reference footage */
+.viewport{
+  background:var(--panel); border:1px solid var(--border); border-radius:var(--radius);
+  overflow:hidden;
+}
+.viewport-bar{
+  height:34px; display:flex; align-items:center; gap:8px; padding:0 12px;
+  border-bottom:1px solid var(--border-soft); background:var(--panel-raised);
+}
+.viewport-bar .dot{width:6px; height:6px; border-radius:50%; background:var(--border);}
+.viewport-bar .fname{
+  font-family:var(--font-mono); font-size:11.5px; color:var(--text-dim); margin-left:4px;
+}
+.viewport-bar .rec{
+  margin-left:auto; font-family:var(--font-mono); font-size:10.5px; color:var(--amber);
+  display:flex; align-items:center; gap:5px;
+}
+.viewport-bar .rec .dot{background:var(--amber); width:5px; height:5px;}
+.viewport-media{position:relative; aspect-ratio:16/9; background:#000;}
+.viewport-media video{width:100%; height:100%; object-fit:cover;}
+
+/* ---------- gallery ---------- */
+.gallery-grid{
+  display:grid; grid-template-columns:1fr 1fr; gap:24px;
+}
+.clip-card .viewport-media{aspect-ratio:426/240;}
+.clip-meta{
+  display:flex; justify-content:space-between; align-items:baseline;
+  padding:14px 2px 0;
+}
+.clip-meta .name{font-family:var(--font-display); font-weight:600; font-size:16px;}
+.clip-meta .stats{font-family:var(--font-mono); font-size:12px; color:var(--text-faint);}
+.clip-desc{color:var(--text-dim); font-size:14px; margin:6px 2px 0; max-width:46ch;}
+
+/* ---------- process (timeline list) ---------- */
+.process-list{list-style:none; margin:0; padding:0; max-width:640px;}
+.process-item{
+  display:grid; grid-template-columns:22px 1fr; gap:20px; position:relative;
+  padding-bottom:40px;
+}
+.process-item:last-child{padding-bottom:0;}
+.process-rail{position:relative; display:flex; justify-content:center;}
+.process-rail .dot{
+  width:9px; height:9px; background:var(--bg); border:2px solid var(--blue);
+  clip-path:polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  margin-top:3px; z-index:1;
+}
+.process-item:not(:last-child) .process-rail::after{
+  content:''; position:absolute; top:14px; bottom:-40px; width:1px; background:var(--border);
+}
+.process-item h3{font-size:17px; margin-bottom:6px;}
+.process-item p{color:var(--text-dim); font-size:14.5px; margin:0; max-width:50ch;}
+.process-time{font-family:var(--font-mono); font-size:11.5px; color:var(--text-faint); margin-top:8px; display:block;}
+
+/* ---------- pricing (properties panel) ---------- */
+.price-panel{
+  border:1px solid var(--border); border-radius:var(--radius); overflow:hidden;
+  max-width:640px; background:var(--panel);
+}
+.price-panel-bar{
+  height:34px; display:flex; align-items:center; padding:0 14px;
+  border-bottom:1px solid var(--border-soft); background:var(--panel-raised);
+  font-family:var(--font-mono); font-size:11.5px; color:var(--text-dim);
+}
+.price-row{
+  display:grid; grid-template-columns:20px 1fr auto; gap:14px; align-items:center;
+  padding:16px 18px; border-bottom:1px solid var(--border-soft);
+}
+.price-row:last-of-type{border-bottom:none;}
+.price-row .dot{
+  width:7px; height:7px; background:var(--blue);
+  clip-path:polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+.price-row .item-name{font-size:15px; font-weight:500;}
+.price-row .item-desc{font-size:13px; color:var(--text-dim); margin-top:2px;}
+.price-row .amount{font-family:var(--font-mono); font-size:17px; color:var(--amber); font-weight:500;}
+.price-note{
+  padding:16px 18px; font-size:13.5px; color:var(--text-dim); background:var(--panel-raised);
+}
+
+/* ---------- contact ---------- */
+.contact-grid{display:grid; grid-template-columns:1.1fr 0.9fr; gap:56px; align-items:start;}
+.contact-list{list-style:none; margin:24px 0 0; padding:0;}
+.contact-list li{
+  display:flex; justify-content:space-between; align-items:center; gap:16px;
+  padding:16px 0; border-bottom:1px solid var(--border-soft);
+}
+.contact-list li:first-child{border-top:1px solid var(--border-soft);}
+.contact-list .k{font-size:14px; color:var(--text-dim);}
+.contact-list .v{font-family:var(--font-mono); font-size:14px; color:var(--text);}
+.contact-list a.v{text-decoration:none;}
+.contact-list a.v:hover{color:var(--blue);}
+.contact-note{
+  border:1px solid var(--border); border-radius:var(--radius); padding:22px;
+  background:var(--panel);
+}
+.contact-note p{font-size:14px; color:var(--text-dim); margin:0 0 0;}
+.contact-note .amount{color:var(--amber); font-family:var(--font-mono);}
+
+/* ---------- footer ---------- */
+footer{
+  border-top:1px solid var(--border-soft); padding:32px 0;
+}
+.footer-row{
+  display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap;
+}
+.footer-row p{font-size:13px; color:var(--text-faint); margin:0;}
+.footer-row a{font-size:13px; color:var(--text-faint); text-decoration:none;}
+.footer-row a:hover{color:var(--text-dim);}
+
+/* ---------- responsive ---------- */
+@media (max-width:860px){
+  .hero-grid, .contact-grid{grid-template-columns:1fr;}
+  .gallery-grid{grid-template-columns:1fr;}
+  .timeline-nav{display:none;}
+  .nav-toggle{
+    display:flex; background:none; border:1px solid var(--border); color:var(--text);
+    border-radius:6px; padding:8px 12px; font-family:var(--font-mono); font-size:12px;
+  }
+  h2{font-size:26px;}
+  .hero h1{font-size:34px;}
+  section{padding:64px 0;}
+}
+@media (max-width:640px){
+  .wrap, .chrome-inner{padding:0 20px;}
+  .nav{height:58px;}
+}
+
+.sr-only{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden;
+  clip:rect(0,0,0,0); white-space:nowrap; border:0;
+}
+
+:focus-visible{outline:2px solid var(--blue); outline-offset:2px;}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-inner">
+    <span class="chrome-dot"></span>
+    <span class="chrome-dot"></span>
+    <span class="chrome-dot on"></span>
+    <span class="chrome-label">studio — animation editor</span>
+  </div>
+</div>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#top">
+      <span class="brand-mark" aria-hidden="true"></span>
+      yourname.anim
+    </a>
+    <ul class="timeline-nav">
+      <li><a href="#work"><span class="tl-diamond" aria-hidden="true"></span>Work</a></li>
+      <li><a href="#process"><span class="tl-diamond" aria-hidden="true"></span>Process</a></li>
+      <li><a href="#pricing"><span class="tl-diamond" aria-hidden="true"></span>Pricing</a></li>
+      <li><a href="#contact"><span class="tl-diamond" aria-hidden="true"></span>Contact</a></li>
+    </ul>
+    <a class="nav-cta" href="#contact">Commission</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="hero-tag"><span class="dot"></span>Open for commissions</span>
+        <h1>Walk cycles that don't feel like walk cycles.</h1>
+        <p class="lead">I rig and animate R16 characters for Roblox — walking, running, crouching, crouch-walking — built frame by frame in Studio and tested until the weight actually reads.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#work">See the work</a>
+          <a class="btn btn-ghost" href="#pricing">View pricing</a>
+        </div>
+        <p class="hero-meta">Animated in Roblox Studio · exported .rbxm/.anim · drops into your rig</p>
+      </div>
+      <div class="viewport">
+        <div class="viewport-bar">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="fname">Walking.anim</span>
+          <span class="rec"><span class="dot"></span>loop</span>
+        </div>
+        <div class="viewport-media">
+          <video autoplay muted loop playsinline preload="metadata" poster="media/Walking_poster.jpg" data-autoplay>
+            <source src="media/Walking.webm" type="video/webm">
+            <source src="media/Walking.mp4" type="video/mp4">
+          </video>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap"><div class="kf-divider"><span class="line"></span><span class="dot"></span><span class="line"></span></div></div>
+
+  <!-- WORK -->
+  <section id="work">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Reference work</p>
+        <h2>Four cycles, built for movement that reads at any speed.</h2>
+        <p class="section-sub">Each clip below is a full R16 animation, captured straight out of the Studio timeline — not a rendered showreel.</p>
+      </div>
+
+      <div class="gallery-grid">
+
+        <div class="clip-card">
+          <div class="viewport">
+            <div class="viewport-bar">
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+              <span class="fname">Walking.anim</span>
+            </div>
+            <div class="viewport-media">
+              <video muted loop playsinline preload="metadata" poster="media/Walking_poster.jpg" data-autoplay>
+                <source src="media/Walking.webm" type="video/webm">
+                <source src="media/Walking.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+          <div class="clip-meta">
+            <span class="name">Walking</span>
+            <span class="stats">218 frames · 21.8s loop</span>
+          </div>
+          <p class="clip-desc">Base movement cycle — even weight transfer and a hip sway that holds up from any camera angle.</p>
+        </div>
+
+        <div class="clip-card">
+          <div class="viewport">
+            <div class="viewport-bar">
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+              <span class="fname">Running.anim</span>
+            </div>
+            <div class="viewport-media">
+              <video muted loop playsinline preload="metadata" poster="media/Running_poster.jpg" data-autoplay>
+                <source src="media/Running.webm" type="video/webm">
+                <source src="media/Running.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+          <div class="clip-meta">
+            <span class="name">Running</span>
+            <span class="stats">126 frames · 12.6s loop</span>
+          </div>
+          <p class="clip-desc">Full sprint cycle with real arm drive and a forward lean that keeps momentum believable.</p>
+        </div>
+
+        <div class="clip-card">
+          <div class="viewport">
+            <div class="viewport-bar">
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+              <span class="fname">Crouching.anim</span>
+            </div>
+            <div class="viewport-media">
+              <video muted loop playsinline preload="metadata" poster="media/Crouching_poster.jpg" data-autoplay>
+                <source src="media/Crouching.webm" type="video/webm">
+                <source src="media/Crouching.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+          <div class="clip-meta">
+            <span class="name">Crouching</span>
+            <span class="stats">95 frames · 9.5s loop</span>
+          </div>
+          <p class="clip-desc">Idle crouch pose with a subtle breathing loop, built to hold on screen without looking stiff.</p>
+        </div>
+
+        <div class="clip-card">
+          <div class="viewport">
+            <div class="viewport-bar">
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+              <span class="fname">Crouch_Walking.anim</span>
+            </div>
+            <div class="viewport-media">
+              <video muted loop playsinline preload="metadata" poster="media/Crouch_Walking_poster.jpg" data-autoplay>
+                <source src="media/Crouch_Walking.webm" type="video/webm">
+                <source src="media/Crouch_Walking.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+          <div class="clip-meta">
+            <span class="name">Crouch-walking</span>
+            <span class="stats">45 frames · 4.5s loop</span>
+          </div>
+          <p class="clip-desc">Low-profile movement cycle — shortened stride, lowered center of mass, no popping on the loop point.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap"><div class="kf-divider"><span class="line"></span><span class="dot"></span><span class="line"></span></div></div>
+
+  <!-- PROCESS -->
+  <section id="process">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Process</p>
+        <h2>How a commission moves from message to file.</h2>
+      </div>
+
+      <ol class="process-list">
+        <li class="process-item">
+          <div class="process-rail"><span class="dot"></span></div>
+          <div>
+            <h3>Send your rig and reference</h3>
+            <p>R16 or a custom rig works. Send any reference clips — game footage, mocap, or the kind of movement you're after — the same way you'd send me one of the gifs above.</p>
+            <span class="process-time">Frame 0</span>
+          </div>
+        </li>
+        <li class="process-item">
+          <div class="process-rail"><span class="dot"></span></div>
+          <div>
+            <h3>Blocked-out pass</h3>
+            <p>Key poses only, usually back to you within a day or two, so you can catch direction issues before any time goes into polish.</p>
+            <span class="process-time">Draft</span>
+          </div>
+        </li>
+        <li class="process-item">
+          <div class="process-rail"><span class="dot"></span></div>
+          <div>
+            <h3>Refine to final</h3>
+            <p>Spacing, weight, and foot planting polished frame by frame until the loop reads clean at full speed.</p>
+            <span class="process-time">Polish</span>
+          </div>
+        </li>
+        <li class="process-item">
+          <div class="process-rail"><span class="dot"></span></div>
+          <div>
+            <h3>Receive your files</h3>
+            <p>Exported and ready to import into Studio, with one round of revisions included if something needs adjusting.</p>
+            <span class="process-time">Final</span>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <div class="wrap"><div class="kf-divider"><span class="line"></span><span class="dot"></span><span class="line"></span></div></div>
+
+  <!-- PRICING -->
+  <section id="pricing">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Pricing</p>
+        <h2>Priced per animation, $5–10.</h2>
+        <p class="section-sub">No packages to decode — pick what you need, pay per clip.</p>
+      </div>
+
+      <div class="price-panel">
+        <div class="price-panel-bar">properties — pricing.anim</div>
+
+        <div class="price-row">
+          <span class="dot"></span>
+          <div>
+            <div class="item-name">Walk cycle</div>
+            <div class="item-desc">Base R16 movement loop</div>
+          </div>
+          <span class="amount">$5</span>
+        </div>
+
+        <div class="price-row">
+          <span class="dot"></span>
+          <div>
+            <div class="item-name">Crouch (idle)</div>
+            <div class="item-desc">Held pose with breathing loop</div>
+          </div>
+          <span class="amount">$5</span>
+        </div>
+
+        <div class="price-row">
+          <span class="dot"></span>
+          <div>
+            <div class="item-name">Crouch-walk cycle</div>
+            <div class="item-desc">Low-profile movement loop</div>
+          </div>
+          <span class="amount">$7</span>
+        </div>
+
+        <div class="price-row">
+          <span class="dot"></span>
+          <div>
+            <div class="item-name">Run cycle</div>
+            <div class="item-desc">Full sprint with arm drive</div>
+          </div>
+          <span class="amount">$8</span>
+        </div>
+
+        <div class="price-note">Other R16 actions — jumping, climbing, emotes — quoted the same way, $5–10 depending on complexity. One revision round is included on every clip.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap"><div class="kf-divider"><span class="line"></span><span class="dot"></span><span class="line"></span></div></div>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="wrap contact-grid">
+      <div>
+        <p class="eyebrow">Contact</p>
+        <h2>Send a message with your rig and reference.</h2>
+        <p class="section-sub">Tell me which animations you need and what the character's for — I'll reply with a quote and a rough timeline.</p>
+
+        <ul class="contact-list">
+          <li>
+            <span class="k">Discord</span>
+            <a class="v" href="#">yourname#0000</a>
+          </li>
+          <li>
+            <span class="k">Roblox profile</span>
+            <a class="v" href="#">roblox.com/users/000000</a>
+          </li>
+          <li>
+            <span class="k">Email</span>
+            <a class="v" href="mailto:you@example.com">you@example.com</a>
+          </li>
+          <li>
+            <span class="k">GitHub</span>
+            <a class="v" href="#">github.com/yourusername</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="contact-note">
+        <p>Most commissions turn around in <strong style="color:var(--text); font-weight:500;">2–5 days</strong> depending on queue length. Rush requests are possible — ask when you reach out. Payment is <span class="amount">$5–10</span> per animation, due on delivery.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap footer-row">
+    <p>Built in Roblox Studio.</p>
+    <a href="#top">Back to top</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var videos = document.querySelectorAll('video[data-autoplay]');
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (reduceMotion) {
+    videos.forEach(function(v){ v.removeAttribute('autoplay'); v.pause(); });
+    return;
+  }
+
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        var v = entry.target;
+        if (entry.isIntersecting) {
+          v.play().catch(function(){});
+        } else {
+          v.pause();
+        }
+      });
+    }, { rootMargin: '80px 0px', threshold: 0.15 });
+
+    videos.forEach(function(v){ io.observe(v); });
+  } else {
+    videos.forEach(function(v){ v.play().catch(function(){}); });
+  }
+})();
+</script>
+
+</body>
+</html>
